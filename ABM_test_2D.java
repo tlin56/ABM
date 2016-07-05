@@ -1,3 +1,5 @@
+//A 2D agent based model, every round the program monitors the amount of substrate, enzyme-substrate complex, enzyme, and product on the grid. 
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-// This program generates data for the accumulate amount of complex formation per round until certain round.
+//A 3D Agent-based model similar as the 2D one.
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -7,23 +7,24 @@ import java.io.PrintWriter;
 import java.io.File;
 
 
-public class ABM_k{
+public class ABM_test_3D{
 
 	public static void main(String[] args) throws IOException{
 	
 		File file = new File(args[0]);
+		//int round_input = Integer.parseInt(args[1]);
 		int maxsub = Integer.parseInt(args[1]);
 		int maxround = Integer.parseInt(args[2]);
 //==========================================================Define cell===================================================================================
         
-        char [][][] EnzymeOne = new char [100][100][100];
-        char [][][] Substrates = new char [100][100][100];
+        char [][][] EnzymeOne = new char [200][200][200];
+        char [][][] Substrates = new char [200][200][200];
 
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 200; i++){
         
-            for(int j = 0; j < 100; j++){
+            for(int j = 0; j < 200; j++){
 
-                for(int k = 0; k < 100; k++){
+                for(int k = 0; k < 200; k++){
             
                 EnzymeOne[i][j][k] = 'O';
                 Substrates[i][j][k] = 'O';
@@ -35,11 +36,11 @@ public class ABM_k{
         
         int spot_count_one = 0;
 
-        while(spot_count_one < 10000){
+        while(spot_count_one < 200){
         
-        	int i = (int)(Math.random()*100);
-        	int j = (int)(Math.random()*100);
-            int k = (int)(Math.random()*100);
+        	int i = (int)(Math.random()*200);
+        	int j = (int)(Math.random()*200);
+            int k = (int)(Math.random()*200);
         	if(EnzymeOne[i][j][k] == 'O'){
         	
         		EnzymeOne[i][j][k] = 'X';
@@ -54,9 +55,9 @@ public class ABM_k{
 		
 		int count_enzyme = 0;
 		
-		for(int i = 0; i < 100; i++){
-			for(int j = 0; j < 100; j++){
-                for(int k = 0; k < 100; k++){
+		for(int i = 0; i < 200; i++){
+			for(int j = 0; j < 200; j++){
+                for(int k = 0; k < 200; k++){
 				
 				if(EnzymeOne[i][j][k] == 'X'){
 					
@@ -81,6 +82,7 @@ public class ABM_k{
 	FileWriter fw = null;
 	BufferedWriter bw = null;
 	PrintWriter pw = null;
+	//int marrowRounds = 200000;
 	
 	try{
 		
@@ -89,14 +91,16 @@ public class ABM_k{
 		pw = new PrintWriter(bw);
 		
 			
+			//reset(IM, Substrates, IM2);
+			//int number = 0;
 			int spot_count_three = 0;
             int count_P = 0;
 
         while(spot_count_three < maxsub){
         	
-        	int i = (int)(Math.random()*100);
-        	int j = (int)(Math.random()*100);
-            int k = (int)(Math.random()*100);
+        	int i = (int)(Math.random()*200);
+        	int j = (int)(Math.random()*200);
+            int k = (int)(Math.random()*200);
         	if(Substrates[i][j][k] == 'O'){
         
         		Substrates[i][j][k] = 'X';
@@ -106,45 +110,35 @@ public class ABM_k{
         	
         }
 		
-	    double accum_rt = 0.0;
+		
 		for(int round = 0; round < maxround; round++){
 			
 			int I = 0;
 			int count_S = 0;
 			int count_E = 0;
 			int count_ES = 0;
-			int count_E_dis = 0;
-			int count_E_app = 0;
-			int count_P_app = 0;
-			double prob_kf = 0.0;
-			double prob_kr = 0.0;
-			double prob_kcat = 0.0;
-            //double counter = 0.0;
 			moveboard(Substrates);
 			moveboard(EnzymeOne);
 			
-			for(int i = 0; i < 100; i++){
-				for(int j = 0; j < 100; j++){
-                    for(int k = 0; k < 100; k++){
+			for(int i = 0; i < 200; i++){
+				for(int j = 0; j < 200; j++){
+                    for(int k = 0; k < 200; k++){
 
 					double random_kf = Math.random();
 					double random_kcat = Math.random();
 					double random_kr = Math.random();
 					
-				   	if(Substrates[i][j][k] == EnzymeOne[i][j][k] && Substrates[i][j][k] == 'X'){
+				   	if(Substrates[i][j][k] == EnzymeOne[i][j][k] && Substrates[i][j][k] == 'X' && random_kf*101 <= 60){
 						Substrates[i][j][k] = 'O';
 						EnzymeOne[i][j][k] = 'C';
-						count_E_dis++;
 					}
-					if(EnzymeOne[i][j][k] == 'C' && random_kcat*1001 <= 40){
+					if(EnzymeOne[i][j][k] == 'C' && random_kcat*1001 <= 50){
 						EnzymeOne[i][j][k] = 'X';
 						I++;
-						count_P_app++;
 					}
-					if(EnzymeOne[i][j][k] == 'C' && Substrates[i][j][k] == 'O' && random_kr*1001 <= 20){
+					if(EnzymeOne[i][j][k] == 'C' && Substrates[i][j][k] == 'O' && random_kr*1001 <= 10){
 						Substrates[i][j][k] = 'X';
 						EnzymeOne[i][j][k] = 'X';
-						count_E_app++;
 					} 
                     if(Substrates[i][j][k] == 'X'){
 						count_S++;
@@ -159,29 +153,34 @@ public class ABM_k{
 					}
 				}
 			}
-            //if(count_E != 0){
-               // prob_kf = count_E_dis*10000/count_E;
-            //}
-			   //counter = prob_kf*count_E*count_S;
-                //accum_rt = accum_rt + counter;
-				count_P = count_P + count_E_dis;
+			
+			//if(round == 10){
+				count_P = count_P + I;
+				//int xone = round;
+				//int yone = count_I*100;
+				//System.out.print(round);
+				//System.out.print(",");
+				//System.out.println(count_I);
 				
-			if(count_E_dis != 0){
-			    //prob_kr = count_E_app*10000/count_ES;
-			    //prob_kcat = count_P_app*1000/count_ES;
+				
+			//}
+			if(I != 0){
+				
 				pw.print(round);
-                pw.print(',');
-                //pw.print(accum_rt);
+				pw.print(',');
+				pw.println(count_P);
 				//pw.print(',');
-                //pw.print(count_E);
-                //pw.print(',');
-                pw.println(count_P);
-				//pw.print(prob_kf);
+				//pw.print(count_S);
 				//pw.print(',');
-				//pw.print(prob_kr);
+				//pw.print(count_E);
 				//pw.print(',');
-				//pw.println(prob_kcat);
+				//pw.println(count_ES);
 				pw.flush();
+				//System.out.println();
+				//System.out.println();
+				//System.out.println();
+				//System.out.println();
+				
 			
 			}
 			if(allO(Substrates)){
@@ -211,10 +210,10 @@ public class ABM_k{
 	
  	public static void reset(char[][][] IM, char[][][] Substrates, char[][][] IM2){
 	
-		for(int i = 0; i < 100; i++){
+		for(int i = 0; i < 200; i++){
 		
-		    for(int j = 0; j < 100; j++){
-            for(int k = 0; k < 100; k++){
+		    for(int j = 0; j < 200; j++){
+            for(int k = 0; k < 200; k++){
 		    
 			IM[i][j][k] = 'O';
 			Substrates[i][j][k] = 'O';
@@ -225,6 +224,7 @@ public class ABM_k{
 		}
 	
 	}
+	
 	
 	
 	/**
@@ -270,6 +270,68 @@ public class ABM_k{
         }
 	
 	} 
+
+		
+	
+
+	
+	/**
+	* Given a tissue sample, and a (row,col) inderow into the arracol, determines if the agent at that location is satisfied.
+	* Note: Blank cells are alwacols satisfied (as there is no agent)
+	*
+	* @param tissue a 2-D character arracol that has been initialized
+	* @param row the row inderow of the agent
+	* @param col the col inderow of the agent
+	* @param threshold the percentage of like agents that must surround the agent to be satisfied
+	* @return boolean indicating if given agent is satisfied
+	*
+	**/
+	
+	
+	//public static boolean smeete(char[][] S, char[][] EOne, char[][] IM, char[][] IM2, int row, int col){
+	//	
+	//	boolean sme = false;
+	//	//double random = Math.random();
+	//	
+	//	if(S[row][col] == EOne[row][col] && S[row][col] == 'X'){
+	//		S[row][col] = 'O';
+	//		IM[row][col] = 'X';
+	//		sme = true;
+	//	}
+	//	return sme;
+	//}
+ 
+	
+	
+	/**
+	* Given a tissue sample, determines if all agents are satisfied.
+	* Note: Blank cells are alwacols satisfied (as there is no agent)
+	*
+	* @param tissue a 2-D character arracol that has been initialized
+	* @return boolean indicating whether entire board has been satisfied (all agents)
+	**/
+	
+	
+// 	public static int changeall(char[][] EOne, char[][] S, char[][] IM){
+//		
+//		int Ichange = 0;
+//		for(int row = 0; row < EOne.length; row++){
+//		
+//			for(int col = 0; col < EOne[0].length; col++){
+//				
+//				if(S[row][col] == EOne[row][col] && S[row][col] == 'X'){
+//					S[row][col] = 'O';
+//					IM[row][col] = 'X';
+//					Ichange++;
+//					
+//				}
+//				
+//				}
+//			
+//			}
+//		
+//			return Ichange;
+//	}
      
 	
 	/**

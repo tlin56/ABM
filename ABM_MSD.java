@@ -1,4 +1,4 @@
-// This program generates data for the accumulate amount of complex formation per round until certain round.
+//This program calculates the mean square displacement of a single particle 3D random walk.
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -7,76 +7,34 @@ import java.io.PrintWriter;
 import java.io.File;
 
 
-public class ABM_k{
+public class ABM_MSD{
 
 	public static void main(String[] args) throws IOException{
 	
 		File file = new File(args[0]);
-		int maxsub = Integer.parseInt(args[1]);
-		int maxround = Integer.parseInt(args[2]);
+		int maxround = Integer.parseInt(args[1]);
 //==========================================================Define cell===================================================================================
         
-        char [][][] EnzymeOne = new char [100][100][100];
-        char [][][] Substrates = new char [100][100][100];
+        char [][][] particle = new char [500][500][500];
 
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 500; i++){
         
-            for(int j = 0; j < 100; j++){
+            for(int j = 0; j < 500; j++){
 
-                for(int k = 0; k < 100; k++){
+                for(int k = 0; k < 500; k++){
             
-                EnzymeOne[i][j][k] = 'O';
-                Substrates[i][j][k] = 'O';
+                particle[i][j][k] = 'O';
                 
                 }
             }
             
         }
         
-        int spot_count_one = 0;
-
-        while(spot_count_one < 10000){
-        
-        	int i = (int)(Math.random()*100);
-        	int j = (int)(Math.random()*100);
-            int k = (int)(Math.random()*100);
-        	if(EnzymeOne[i][j][k] == 'O'){
+        	int x0 = 249;
+        	int y0 = 249;
+            int z0 = 249;
         	
-        		EnzymeOne[i][j][k] = 'X';
-        		spot_count_one++;
-        	
-        	}
-        
-		}
-		
-//==========================================================================================================================================================
-		//The following code tests if there are only 10 enzyme particle in the grid. The count should be 10 (same as the final spot_count_one).
-		
-		int count_enzyme = 0;
-		
-		for(int i = 0; i < 100; i++){
-			for(int j = 0; j < 100; j++){
-                for(int k = 0; k < 100; k++){
-				
-				if(EnzymeOne[i][j][k] == 'X'){
-					
-					count_enzyme++;
-					
-				}
-				}
-			}
-			
-		}
-//==========================================================================================================================================================		
-		
-	System.out.println(count_enzyme);
-	System.out.println();
-	System.out.println();
-	System.out.println();
-	System.out.println();
-	
-	
-//==========================================================================================================================================================
+        		particle[x0][y0][z0] = 'X';
 	
 	FileWriter fw = null;
 	BufferedWriter bw = null;
@@ -89,106 +47,45 @@ public class ABM_k{
 		pw = new PrintWriter(bw);
 		
 			
-			int spot_count_three = 0;
-            int count_P = 0;
-
-        while(spot_count_three < maxsub){
-        	
-        	int i = (int)(Math.random()*100);
-        	int j = (int)(Math.random()*100);
-            int k = (int)(Math.random()*100);
-        	if(Substrates[i][j][k] == 'O'){
-        
-        		Substrates[i][j][k] = 'X';
-        		spot_count_three++;
-        
-        	}
-        	
-        }
+			//reset(IM, Substrates, IM2);
+			//int number = 0;
+		int MSD_sum = 0;
 		
-	    double accum_rt = 0.0;
-		for(int round = 0; round < maxround; round++){
+		for(int round = 1; round < maxround; round++){
 			
-			int I = 0;
-			int count_S = 0;
-			int count_E = 0;
-			int count_ES = 0;
-			int count_E_dis = 0;
-			int count_E_app = 0;
-			int count_P_app = 0;
-			double prob_kf = 0.0;
-			double prob_kr = 0.0;
-			double prob_kcat = 0.0;
-            //double counter = 0.0;
-			moveboard(Substrates);
-			moveboard(EnzymeOne);
+			int MSD = 0;
+			moveboard(particle);
 			
-			for(int i = 0; i < 100; i++){
-				for(int j = 0; j < 100; j++){
-                    for(int k = 0; k < 100; k++){
+			for(int i = 0; i < 500; i++){
+        
+            for(int j = 0; j < 500; j++){
 
-					double random_kf = Math.random();
-					double random_kcat = Math.random();
-					double random_kr = Math.random();
-					
-				   	if(Substrates[i][j][k] == EnzymeOne[i][j][k] && Substrates[i][j][k] == 'X'){
-						Substrates[i][j][k] = 'O';
-						EnzymeOne[i][j][k] = 'C';
-						count_E_dis++;
+                for(int k = 0; k < 500; k++){
+					if(particle[i][j][k] == 'X'){
+						MSD = (i - x0)*(i - x0) + (j - y0)*(j - y0) + (k - z0)*(k - z0);
 					}
-					if(EnzymeOne[i][j][k] == 'C' && random_kcat*1001 <= 40){
-						EnzymeOne[i][j][k] = 'X';
-						I++;
-						count_P_app++;
-					}
-					if(EnzymeOne[i][j][k] == 'C' && Substrates[i][j][k] == 'O' && random_kr*1001 <= 20){
-						Substrates[i][j][k] = 'X';
-						EnzymeOne[i][j][k] = 'X';
-						count_E_app++;
-					} 
-                    if(Substrates[i][j][k] == 'X'){
-						count_S++;
-					}
-					if(EnzymeOne[i][j][k] == 'X'){
-						count_E++;
-					}
-					if(EnzymeOne[i][j][k] == 'C'){
-						count_ES++;
-					}
-
-					}
-				}
-			}
-            //if(count_E != 0){
-               // prob_kf = count_E_dis*10000/count_E;
-            //}
-			   //counter = prob_kf*count_E*count_S;
-                //accum_rt = accum_rt + counter;
-				count_P = count_P + count_E_dis;
-				
-			if(count_E_dis != 0){
-			    //prob_kr = count_E_app*10000/count_ES;
-			    //prob_kcat = count_P_app*1000/count_ES;
+                }
+            }
+            
+        }
+			
+				MSD_sum = MSD_sum + MSD;
 				pw.print(round);
-                pw.print(',');
-                //pw.print(accum_rt);
+				pw.print(',');
+				pw.println(MSD_sum/round);
 				//pw.print(',');
-                //pw.print(count_E);
-                //pw.print(',');
-                pw.println(count_P);
-				//pw.print(prob_kf);
+				//pw.print(count_S);
 				//pw.print(',');
-				//pw.print(prob_kr);
+				//pw.print(count_E);
 				//pw.print(',');
-				//pw.println(prob_kcat);
+				//pw.println(count_ES);
 				pw.flush();
+				//System.out.println();
+				//System.out.println();
+				//System.out.println();
+				//System.out.println();
+				
 			
-			}
-			if(allO(Substrates)){
-				
-				break;
-				
-			}
 				
 			}
 		
@@ -208,80 +105,7 @@ public class ABM_k{
 		
 	}
 	
-	
- 	public static void reset(char[][][] IM, char[][][] Substrates, char[][][] IM2){
-	
-		for(int i = 0; i < 100; i++){
-		
-		    for(int j = 0; j < 100; j++){
-            for(int k = 0; k < 100; k++){
-		    
-			IM[i][j][k] = 'O';
-			Substrates[i][j][k] = 'O';
-			IM2[i][j][k] = 'O';
-			}
-		    }
-		    
-		}
-	
-	}
-	
-	
-	/**
-	* Given a tissue sample, prints the cell make up in grid form
-	*
-	* @param tissue a 2-D character arracol representing a tissue sample
-	* 
-	***/
-	
-	public static boolean allO(char[][][] tissue){
-			
-	for(int row = 0; row < tissue.length; row++ ){
-        
-            for(int col = 0; col < tissue[0].length; col++){
-                for(int k = 0; k < tissue[0][0].length; k++){
-            	    
-            	    if(tissue[row][col][k] == 'X'){
-            	    
-            	    	    return false;
-            	    
-            	    }
-            	   } 
-            }
-        }
-        
-        return true;
-	
-	}
-	
-	public static void printTissue(char[][][] tissue){
-		
-        for(int row = 0; row < tissue.length; row++ ){
-        
-            for(int col = 0; col < tissue[0].length; col++){
-                for(int k = 0; k < tissue[0][0].length; k++){
-            
-                System.out.print("'" + tissue[row][col][k] + "' ");		//Line 30-44 simplcol prints out the element in the 2D arracol
-            }
-            }
-        
-            System.out.println();
-        
-        }
-	
-	} 
-     
-	
-	/**
-	* Given a tissue sample, move all unsatisfied agents to a vacant cell
-	*
-	* @param tissue a 2-D character arracol that has been initialized
-	* @param threshold the percentage of like agents that must surround the agent to be satisfied
-	* @return an integer representing how mancol cells were moved in this round
-	*
-	**/
-	
-	
+
  	public static void moveboard(char[][][] tissue){		
 		
 			for(int row = 0; row < tissue.length; row++){
