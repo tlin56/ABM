@@ -10,17 +10,24 @@ import java.io.File;
 public class ABM_test_2D{
 
 	public static void main(String[] args) throws IOException{
+
+//First define inputs for the main. Basically three input flags/arguments. First, filename. Second, the number of substrate that one wants to start with.
+//And Third, the number of rounds you wish to run.
 	
 		File file = new File(args[0]);
-		//int round_input = Integer.parseInt(args[1]);
 		int maxsub = Integer.parseInt(args[1]);
 		int maxround = Integer.parseInt(args[2]);
-//==========================================================Define cell===================================================================================
-        
+    
+//First create the 2D matrix for Enzyme (single enzyme in this case), substrate, and Intermediate. The reason I use multiple matrix to store different types of
+//particle is simply becasue it is easier to monitor the change, plus I allow particles to overlap with each other. Also noticed that I did not create a matrix for
+// the product. That is becasue there is no need to store the location of the product. I only need to count and store how many product were created each round if necessary.
+	    
         char [][] EnzymeOne = new char [100][100];
         char [][] Substrates = new char [100][100];
         char [][] IM = new char [100][100];
 
+//First assign each location in the matrix/grid 'O', to represent that it is blank. Basically set all the grids to blank/zero initially.		
+		
         for(int i = 0; i < 100; i++){
         
             for(int j = 0; j < 100; j++){
@@ -33,6 +40,8 @@ public class ABM_test_2D{
             
         }
         
+//Here we are putting 100 enzymes (you can change that of course) into random places in the grid.
+		
         int spot_count_one = 0;
 
         while(spot_count_one < 100){
@@ -48,38 +57,10 @@ public class ABM_test_2D{
         
 		}
 		
-//==========================================================================================================================================================
-		//The following code tests if there are only 10 enzyme particle in the grid. The count should be 10 (same as the final spot_count_one).
-		
-		int count_enzyme = 0;
-		
-		for(int i = 0; i < 100; i++){
-			for(int j = 0; j < 100; j++){
-				
-				if(EnzymeOne[i][j] == 'X'){
-					
-					count_enzyme++;
-					
-				}
-				
-			}
-			
-		}
-//==========================================================================================================================================================		
-		
-	System.out.println(count_enzyme);
-	System.out.println();
-	System.out.println();
-	System.out.println();
-	System.out.println();
-	
-	
-//==========================================================================================================================================================
 	
 	FileWriter fw = null;
 	BufferedWriter bw = null;
 	PrintWriter pw = null;
-	//int marrowRounds = 200000;
 	
 	try{
 		
@@ -88,8 +69,8 @@ public class ABM_test_2D{
 		pw = new PrintWriter(bw);
 		
 			
-			//reset(IM, Substrates, IM2);
-			//int number = 0;
+//Here I randomly put certain number of substrate into the "substrate" grid.
+			
 			int spot_count_three = 0;
 
         while(spot_count_three < maxsub){
@@ -104,6 +85,10 @@ public class ABM_test_2D{
         	}
         	
         }
+		
+//Baically, each round I would move everything by one step (all directions have equal change of being chosen).
+//And for every round, I would record the number of substrate cahnge, the number of enzyme change, the number of enzyme compelx change and etc. You can obvisouly
+//what to record and what not to record.
 		
 		int counter = 0;
 		for(int round = 0; round < maxround; round++){
